@@ -41,7 +41,7 @@ function hostModePause() {
   video.onpause = null;
   video.pause();
   setTimeout(() => {
-    video.onpause = temp;
+    document.querySelectorAll("video")[videos.length - 1].onpause = temp;
   }, 500);
 }
 
@@ -55,7 +55,7 @@ function createRoom(name) {
   console.log("creatingsocket");
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
-  ws = new WebSocket("ws://localhost:3000");
+  ws = new WebSocket("wss://amasync.tk:8080");
   ws.onmessage = onmessage;
   ws.onopen = () =>
     ws.send(
@@ -68,7 +68,7 @@ function createRoom(name) {
 }
 
 function joinRoom(name, room, time) {
-  ws = new WebSocket("ws://localhost:3000");
+  ws = new WebSocket("wss://amasync.tk:8080");
   ws.onmessage = onmessage;
   ws.onopen = () =>
     ws.send(
@@ -77,6 +77,7 @@ function joinRoom(name, room, time) {
   me.iAmhost = false;
   let videos = document.querySelectorAll("video");
   videos[videos.length - 1].currentTime = time;
+  hostModePause();
 }
 
 function setup() {

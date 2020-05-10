@@ -29,7 +29,7 @@ Nodejs >= 10, npm, react
   cd amasync
   cd chrome-extension
   npm install
-  npm start
+  npm run build
   ```
 - Open google chrome and write ```chrome://extensions``` in the navegation bar
 - Enable developer mode and click LOAD UNPACKED 
