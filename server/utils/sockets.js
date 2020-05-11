@@ -54,7 +54,7 @@ const Sockets = function () {
 
         if (message.isJoinRequest()) {
           rooms.join(message.getRoomID(), message.getUser(), ws);
-          ws.send(PROTOCOL.JOINED + PROTOCOL.SEPARATOR + "1"); //FIX
+          ws.send(PROTOCOL.JOINED + PROTOCOL.SEPARATOR + message.getRoomID());
         } else if (message.isCreateRequest()) {
           const id = rooms.create(message.getUser(), ws);
           ws.send(PROTOCOL.CREATED + PROTOCOL.SEPARATOR + id);

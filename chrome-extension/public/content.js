@@ -92,6 +92,6 @@ function onmessage(e) {
       break;
     case PROTOCOL.JOINED:
       console.log("llego joined a content");
-      sendMessagePop({ action: "joined" });
+      sendMessagePop({ action: "joined", data: rest[0] });
   }
 }
