@@ -57,7 +57,7 @@ function hostModePause() {
   video.pause();
   setTimeout(() => {
     videos[videos.length - 1].onpause = temp;
-  }, 500);
+  }, 1000);
 }
 
 function hostModeMove(time) {
@@ -144,7 +144,7 @@ function setup() {
       console.log("content: host dio move");
       setTimeout(() => {
         ws.send(PROTOCOL.MOVE + PROTOCOL.SEPARATOR + video.currentTime);
-      }, 500);
+      }, 1000);
     }
   };
 }
