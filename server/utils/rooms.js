@@ -14,17 +14,14 @@ const Rooms = function () {
     let host = { user: user, socket: ws };
     rooms.set(id, { host: host, users: [] });
     hosts.set(ws, id);
-    console.log(hosts);
     return id;
   };
 
   Rooms.getUsers = (roomID) => {
-    console.log(rooms.get(roomID));
     return rooms.get(roomID).users;
   };
 
   Rooms.getRoomID = (ws) => {
-    console.log(hosts);
     return hosts.get(ws);
   };
 

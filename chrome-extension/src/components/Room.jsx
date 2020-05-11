@@ -1,14 +1,14 @@
 /*global chrome*/
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 function Room() {
-  const nameRef = useRef();
-  const roomRef = useRef();
   const [link, setLink] = useState("");
+  const [room, setRoom] = useState("");
   const [name, setName] = useState("");
+  const [nameInput, setNameInput] = useState("");
   const [join, setJoin] = useState(false);
-  const [create, setCreate] = useState(true);
   const [joined, setJoined] = useState(false);
+  const [create, setCreate] = useState(true);
 
   function getQueryParams(url) {
     let queryParams = {};
@@ -32,14 +32,21 @@ function Room() {
     if (roomLink) {
       setJoin(false);
       setCreate(false);
+      setJoined(false);
       setLink(roomLink);
     }
     const myName = localStorage.getItem("name");
-    console.log("aquita", myName);
-
     if (myName) {
       setName(myName);
-      nameRef.current.value = myName;
+      setNameInput(myName);
+    }
+
+    const newRoom = localStorage.getItem("room");
+    if (newRoom) {
+      setRoom(newRoom);
+      setJoin(false);
+      setCreate(false);
+      setJoined(false);
     }
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -47,12 +54,16 @@ function Room() {
       switch (message.action) {
         case "link":
           localStorage.setItem("link", message.data);
+          setJoin(false);
           setCreate(false);
+          setJoined(false);
           setLink(message.data);
           break;
         case "joined":
           setJoin(false);
+          setCreate(false);
           setJoined(true);
+          saveRoom(message.data);
           break;
         default:
           break;
@@ -64,11 +75,13 @@ function Room() {
       let params = getQueryParams(url);
       if ("session" in params) {
         setCreate(false);
-        setJoin(true);
-        roomRef.current.textContent = params.session;
+        setJoined(!!newRoom);
+        setJoin(!newRoom);
+        setRoom(params.session);
       } else {
         setJoin(false);
-        setCreate(true);
+        setJoined(false);
+        setCreate(!roomLink);
       }
     });
   }, []);
@@ -83,35 +96,43 @@ function Room() {
     sendMessage({ action: "setup" });
     sendMessage({
       action: "connect",
-      data: nameRef.current.value,
+      data: nameInput,
     });
-    saveName(nameRef.current.value);
+    saveName(nameInput);
   };
 
   const onJoinClick = () => {
     sendMessage({ action: "setup" });
     sendMessage({
       action: "join",
-      data: nameRef.current.value + ":" + roomRef.current.textContent,
+      data: nameInput + ":" + room,
     });
-    saveName(nameRef.current.value);
+    saveName(nameInput);
   };
 
-  const saveName = (myName) => {
-    localStorage.setItem("name", myName);
-    console.log("saved name");
+  const saveName = (newName) => {
+    localStorage.setItem("name", newName);
+    setName(newName);
+  };
 
-    setName(myName);
+  const saveRoom = (newRoom) => {
+    localStorage.setItem("room", newRoom);
+    setRoom(newRoom);
   };
 
   return (
     <div>
-      <h1>Welcome to Amasync {!!name && <span>{name}</span>}</h1>
+      <h1>Welcome to Amasync{!!name && <span>, {name}</span>}!</h1>
 
       {create && (
         <div id="new">
           <h6>Your name: </h6>
-          <input id="nombre-host" placeholder="Name" ref={nameRef} />
+          <input
+            id="nombre-host"
+            placeholder="Name"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+          />
           <button id="start" onClick={onCreateClick}>
             Start party
           </button>
@@ -120,17 +141,22 @@ function Room() {
       {join && (
         <div id="join">
           <h6>
-            You're joining room: <span id="id-sala" ref={roomRef}></span>
+            You're joining room: <span id="id-sala">{room}</span>
           </h6>
           <h6>Please insert your name: </h6>
-          <input id="nombre" placeholder="Name" ref={nameRef} />
+          <input
+            id="nombre"
+            placeholder="Name"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+          />
           <button id="join" onClick={onJoinClick}>
             Join
           </button>
         </div>
       )}
       {!!link && <div> Share this link with your friends {link}</div>}
-      {joined && <div>Successfully joined! </div>}
+      {joined && <div> You're currently in room {room}</div>}
     </div>
   );
 }
