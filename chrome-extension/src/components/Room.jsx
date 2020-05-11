@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 function Room() {
+
   const [time, setTime] = useState(0);
   const [link, setLink] = useState("");
   const [room, setRoom] = useState("");
@@ -10,6 +11,10 @@ function Room() {
   const [join, setJoin] = useState(false);
   const [joined, setJoined] = useState(false);
   const [create, setCreate] = useState(true);
+
+  let roomLink;
+  let myName;
+  let newRoom;
 
   function getQueryParams(url) {
     let queryParams = {};
@@ -29,32 +34,34 @@ function Room() {
   }
 
   useEffect(() => {
-    const roomLink = localStorage.getItem("link");
-    if (roomLink) {
-      setJoin(false);
-      setCreate(false);
-      setJoined(false);
-      setLink(roomLink);
-    }
-    const myName = localStorage.getItem("name");
-    if (myName) {
-      setName(myName);
-      setNameInput(myName);
-    }
-
-    const newRoom = localStorage.getItem("room");
-    if (newRoom) {
-      setRoom(newRoom);
-      setJoin(false);
-      setCreate(false);
-      setJoined(false);
-    }
+    sendMessage({ action: "get" }, (ans) => {
+      roomLink = ans[0]
+      myName = ans[1]
+      newRoom = ans[2]
+      if (roomLink) {
+        setJoin(false);
+        setCreate(false);
+        setJoined(false);
+        setLink(roomLink);
+        if (myName) {
+          setName(myName);
+          setNameInput(myName);
+        }
+      }
+      if (newRoom) {
+        setRoom(newRoom);
+        setJoin(false);
+        setCreate(false);
+        setJoined(false);
+      }
+    });
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       console.log(message);
       switch (message.action) {
         case "link":
-          localStorage.setItem("link", message.data);
+          sendMessage({ action: "session link", data: message.data })
+
           setJoin(false);
           setCreate(false);
           setJoined(false);
@@ -113,12 +120,12 @@ function Room() {
   };
 
   const saveName = (newName) => {
-    localStorage.setItem("name", newName);
+    sendMessage({ action: "session name", data: newName })
     setName(newName);
   };
 
   const saveRoom = (newRoom) => {
-    localStorage.setItem("room", newRoom);
+    sendMessage({ action: "session room", data: newRoom })
     setRoom(newRoom);
   };
 

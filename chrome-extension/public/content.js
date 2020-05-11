@@ -15,23 +15,38 @@ const PROTOCOL = {
 };
 
 chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
-  if (msg.action == "getUrl") {
+  let action = msg.action.split(" ")[0]
+  if (action == "getUrl") {
     sendResponse(window.location.href);
-  } else if (msg.action == "connect") {
+  } else if (action == "connect") {
     createRoom(msg.data);
-  } else if (msg.action == "join") {
+  } else if (action == "join") {
     joinRoom(msg.data[0], msg.data[1], msg.data[2]);
-  } else if (msg.action == "setup") {
+  } else if (action == "setup") {
     setup();
+  } else if (action == "session") {
+    saveSession(msg.action.split(" ")[1], msg.data)
+  } else if (action == "get") {
+    sendResponse(getStorage());
   }
 });
 
+function getStorage() {
+  let link = sessionStorage.getItem("link")
+  let name = sessionStorage.getItem("name")
+  let room = sessionStorage.getItem("room")
+  return [link, room, name]
+}
+
+function saveSession(key, value) {
+  sessionStorage.setItem(key, value);
+}
 function hostModePlay() {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
   let temp = video.onplay;
   video.onplay = null;
-  video.play().then(() => (video.onplay = temp));
+  video.play().then(() => (videos[videos.length - 1].onplay = temp));
 }
 
 function hostModePause() {
@@ -41,7 +56,7 @@ function hostModePause() {
   video.onpause = null;
   video.pause();
   setTimeout(() => {
-    document.querySelectorAll("video")[videos.length - 1].onpause = temp;
+    videos[videos.length - 1].onpause = temp;
   }, 500);
 }
 
@@ -57,13 +72,14 @@ function createRoom(name) {
   let video = videos[videos.length - 1];
   ws = new WebSocket("wss://amasync.tk:8080");
   ws.onmessage = onmessage;
+  hostModePause();
   ws.onopen = () =>
     ws.send(
       PROTOCOL.CREATE +
-        PROTOCOL.SEPARATOR +
-        name +
-        PROTOCOL.SEPARATOR +
-        video.currentTime
+      PROTOCOL.SEPARATOR +
+      name +
+      PROTOCOL.SEPARATOR +
+      video.currentTime
     );
 }
 
@@ -123,6 +139,7 @@ function setup() {
     console.log("mover tiempo");
     if (!me.iAmhost) {
       ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
+      hostModePause()
     } else {
       console.log("content: host dio move");
       setTimeout(() => {
@@ -164,12 +181,13 @@ function onmessage(e) {
     case PROTOCOL.HOST_TIME:
       let videos = document.querySelectorAll("video");
       let video = videos[videos.length - 1];
+      hostModePause()
       ws.send(
         PROTOCOL.HOST_TIME +
-          PROTOCOL.SEPARATOR +
-          rest[0] +
-          PROTOCOL.SEPARATOR +
-          video.currentTime
+        PROTOCOL.SEPARATOR +
+        rest[0] +
+        PROTOCOL.SEPARATOR +
+        video.currentTime
       );
       break;
     case PROTOCOL.MOVE:
