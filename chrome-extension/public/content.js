@@ -16,10 +16,7 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
   } else if (msg.action == "connect") {
     createRoom(msg.data);
   } else if (msg.action == "join") {
-    ws = new WebSocket("wss://localhost:3000");
-    ws.onmessage = onmessage;
-    ws.onopen = () => ws.send(PROTOCOL.JOIN + PROTOCOL.SEPARATOR + msg.data);
-    me.iAmhost = false;
+    joinRoom(msg.data);
   } else if (msg.action == "setup") {
     console.log(msg);
     document.querySelectorAll("video")[0].onplay = (e) => {
@@ -45,26 +42,32 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
 });
 
 function hostModePlay() {
-  let temp = document.querySelectorAll("video")[0].onplay;
-  document.querySelectorAll("video")[0].onplay = null;
-  document
-    .querySelectorAll("video")[0]
-    .play()
-    .then((res) => (document.querySelectorAll("video")[0].onplay = temp));
+  let video = document.querySelectorAll("video")[0];
+  let temp = video.onplay;
+  video.onplay = null;
+  video.play().then(() => (video.onplay = temp));
 }
 
 function hostModePause() {
-  let temp = document.querySelectorAll("video")[0].onpause;
-  document.querySelectorAll("video")[0].onpause = null;
-  document.querySelectorAll("video")[0].pause();
-  document.querySelectorAll("video")[0].onpause = temp;
+  let video = document.querySelectorAll("video")[0];
+  let temp = video.onpause;
+  video.onpause = null;
+  video.pause();
+  video.onpause = temp;
 }
 
-function createRoom(nombre) {
+function createRoom(name) {
   console.log("creatingsocket");
-  ws = new WebSocket("wss://localhost:3000");
+  ws = new WebSocket("ws://localhost:3000");
   ws.onmessage = onmessage;
-  ws.onopen = () => ws.send(PROTOCOL.CREATE + PROTOCOL.SEPARATOR + nombre);
+  ws.onopen = () => ws.send(PROTOCOL.CREATE + PROTOCOL.SEPARATOR + name);
+}
+
+function joinRoom(msg) {
+  ws = new WebSocket("ws://localhost:3000");
+  ws.onmessage = onmessage;
+  ws.onopen = () => ws.send(PROTOCOL.JOIN + PROTOCOL.SEPARATOR + msg);
+  me.iAmhost = false;
 }
 
 function sendMessagePop(message) {

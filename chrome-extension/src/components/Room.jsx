@@ -5,8 +5,9 @@ function Room() {
   const nameRef = useRef();
   const roomRef = useRef();
   const [link, setLink] = useState("");
+  const [name, setName] = useState("");
   const [join, setJoin] = useState(false);
-  const [create, setCreate] = useState(false);
+  const [create, setCreate] = useState(true);
   const [joined, setJoined] = useState(false);
 
   function getQueryParams(url) {
@@ -27,10 +28,26 @@ function Room() {
   }
 
   useEffect(() => {
+    const roomLink = localStorage.getItem("link");
+    if (roomLink) {
+      setJoin(false);
+      setCreate(false);
+      setLink(roomLink);
+    }
+    const myName = localStorage.getItem("name");
+    console.log("aquita", myName);
+
+    if (myName) {
+      setName(myName);
+      nameRef.current.value = myName;
+    }
+
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       console.log(message);
       switch (message.action) {
         case "link":
+          localStorage.setItem("link", message.data);
+          setCreate(false);
           setLink(message.data);
           break;
         case "joined":
@@ -68,19 +85,28 @@ function Room() {
       action: "connect",
       data: nameRef.current.value,
     });
+    saveName(nameRef.current.value);
   };
 
   const onJoinClick = () => {
     sendMessage({ action: "setup" });
     sendMessage({
       action: "join",
-      data: roomRef.current.textContent,
+      data: nameRef.current.value + ":" + roomRef.current.textContent,
     });
+    saveName(nameRef.current.value);
+  };
+
+  const saveName = (myName) => {
+    localStorage.setItem("name", myName);
+    console.log("saved name");
+
+    setName(myName);
   };
 
   return (
     <div>
-      <h1>Welcome to video party</h1>
+      <h1>Welcome to Amasync {!!name && <span>{name}</span>}</h1>
 
       {create && (
         <div id="new">
@@ -97,7 +123,7 @@ function Room() {
             You're joining room: <span id="id-sala" ref={roomRef}></span>
           </h6>
           <h6>Please insert your name: </h6>
-          <input id="nombre" placeholder="Name" />
+          <input id="nombre" placeholder="Name" ref={nameRef} />
           <button id="join" onClick={onJoinClick}>
             Join
           </button>

@@ -6,8 +6,7 @@
 
 const app = require("../app");
 const debug = require("debug")("amasync-server:server");
-const https = require("https");
-const fs = require("fs");
+const http = require("http");
 const ws = require("../utils/sockets");
 
 /**
@@ -21,13 +20,7 @@ app.set("port", port);
  * Create HTTP server.
  */
 
-const server = https.createServer(
-  {
-    cert: fs.readFileSync("./cert/cert.pem"),
-    key: fs.readFileSync("./cert/key.pem"),
-  },
-  app
-);
+const server = http.createServer(app);
 ws.setup(server);
 
 /**

@@ -23,7 +23,7 @@ class Message {
   }
   getRoomID() {
     if (this.isJoinRequest()) {
-      return this.args[0];
+      return this.args[1];
     }
     throw Error(`Message is not JOIN ${this.cmd}: ${this.args}`);
   }
@@ -32,7 +32,7 @@ class Message {
     return this.cmd === PROTOCOL.CREATE;
   }
   getUser() {
-    if (this.isCreateRequest()) {
+    if (this.isCreateRequest() || this.isJoinRequest()) {
       return this.args[0];
     }
     throw Error(`Message is not CREATE ${this.cmd}: ${this.args}`);
@@ -53,10 +53,10 @@ const Sockets = function () {
         let message = new Message(msg);
 
         if (message.isJoinRequest()) {
-          rooms.join(message.getRoomID(), message.args[1], ws);
+          rooms.join(message.getRoomID(), message.getUser(), ws);
           ws.send(PROTOCOL.JOINED + PROTOCOL.SEPARATOR + "1"); //FIX
         } else if (message.isCreateRequest()) {
-          const id = rooms.create(message.getUser());
+          const id = rooms.create(message.getUser(), ws);
           ws.send(PROTOCOL.CREATED + PROTOCOL.SEPARATOR + id);
         } else if (message.isControlRequest()) {
           let roomID = rooms.getRoomID(ws);
