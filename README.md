@@ -42,7 +42,7 @@ Nodejs >= 10, npm, react
 Log into your PrimeVideo account
 ## Create a room
 - Go to a movie/Serie you want to watch with your friends
-- ⚠️**Click on the extension icon**⚠️
+- ⚠️**Click on the extension's icon**⚠️
 - Click on *Create room* and share the link with your friends
 
 
@@ -50,7 +50,7 @@ Log into your PrimeVideo account
 
 - Go to the link your friend shared with you
 - Click on the play button and pause the movie
-- ⚠️**Click on the extension icon**⚠️
+- ⚠️**Click on the extension's icon**⚠️
 - Select a name and click on *Join*
 
 
