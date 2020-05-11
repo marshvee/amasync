@@ -9,9 +9,19 @@
     "128": "logo128.png",
     "512": "logo.png"
   },
-  "browser_action": {
+  "page_action": {
     "default_icon": "logo.png",
     "default_popup": "index.html"
   },
-  "permissions": ["storage"]
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.primevideo.com/detail/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "permissions": ["activeTab", "declarativeContent"]
 }
