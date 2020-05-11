@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 function Room() {
+  const [time, setTime] = useState(0);
   const [link, setLink] = useState("");
   const [room, setRoom] = useState("");
   const [name, setName] = useState("");
@@ -78,6 +79,7 @@ function Room() {
         setJoined(!!newRoom);
         setJoin(!newRoom);
         setRoom(params.session);
+        setTime(params.time);
       } else {
         setJoin(false);
         setJoined(false);
@@ -105,7 +107,7 @@ function Room() {
     sendMessage({ action: "setup" });
     sendMessage({
       action: "join",
-      data: nameInput + ":" + room,
+      data: [nameInput, room, time],
     });
     saveName(nameInput);
   };

@@ -3,9 +3,10 @@ const uuid = require("uuid");
 const Rooms = function () {
   const Rooms = {};
   const rooms = new Map();
-  let hosts = new Map();
+  const users = new Map();
 
   Rooms.join = (roomID, user, ws) => {
+    users.set(ws, roomID);
     rooms.get(roomID).users.push({ user: user, socket: ws });
   };
 
@@ -13,7 +14,7 @@ const Rooms = function () {
     let id = uuid.v4();
     let host = { user: user, socket: ws };
     rooms.set(id, { host: host, users: [] });
-    hosts.set(ws, id);
+    users.set(ws, id);
     return id;
   };
 
@@ -22,7 +23,12 @@ const Rooms = function () {
   };
 
   Rooms.getRoomID = (ws) => {
-    return hosts.get(ws);
+    return users.get(ws);
+  };
+
+  Rooms.getHost = (roomID) => {
+    console.log(rooms.get(roomID) + "gethost");
+    return rooms.get(roomID).host;
   };
 
   return Rooms;
