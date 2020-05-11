@@ -15,13 +15,13 @@ It has the following functionalities:
 - Chats in room
 - Cutomizable name of users
 
-## Deployment
+# Deployment 💻:
 
 
-### Prerequisites: 
+## Prerequisites: 
 Nodejs >= 10, npm, react
 
-### Local deployment:
+## Local deployment:
 - Clone this repo
 - Run the following commands
 
@@ -36,20 +36,21 @@ Nodejs >= 10, npm, react
 ![tutorial extension](https://developer.chrome.com/static/images/get_started/load_extension.png)
 - Select the folder amasync/chrome-extension/build
 
-## How to use 
+# How to use ✅ 
 *Note: Your friends must have an PrimeVideo account*
 
 Log into your PrimeVideo account
-### Create a room
+## Create a room
 - Go to a movie/Serie you want to watch with your friends
-- **Click on the extension icon**
+- ⚠️**Click on the extension icon**⚠️
 - Click on *Create room* and share the link with your friends
 
 
 ## Join a room
+
 - Go to the link your friend shared with you
 - Click on the play button and pause the movie
--**Click on the extension icon**
+- ⚠️**Click on the extension icon**⚠️
 - Select a name and click on *Join*
 
 
