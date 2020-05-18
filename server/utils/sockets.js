@@ -7,6 +7,7 @@ const PROTOCOL = {
   CREATED: "created",
   HOST_TIME: "hosttime",
   JOINED: "joined",
+  MESSAGE: "message",
   MOVE: "move",
   PLAY: "play",
   PAUSE: "pause",
@@ -39,6 +40,8 @@ class Message {
   getUser() {
     if (this.isCreateRequest() || this.isJoinRequest()) {
       return this.args[0];
+    } else if (this.isChatMessage()) {
+      return this.args[1];
     }
     throw Error(`Message is not CREATE ${this.cmd}: ${this.args}`);
   }
@@ -68,6 +71,16 @@ class Message {
   }
   isHostTimeRequest() {
     return this.cmd === PROTOCOL.HOST_TIME;
+  }
+
+  isChatMessage() {
+    return this.cmd === PROTOCOL.MESSAGE;
+  }
+  getChatMessage() {
+    if (this.isChatMessage()) {
+      return this.args[0];
+    }
+    throw Error(`Message is not MESSAGE ${this.cmd}: ${this.args}`);
   }
 }
 
@@ -119,6 +132,20 @@ const Sockets = function () {
           rooms.getUsers(roomID).forEach((user) => {
             user.socket.send(
               PROTOCOL.MOVE + PROTOCOL.SEPARATOR + message.getTime()
+            );
+          });
+        } else if (message.isChatMessage()) {
+          let roomID = rooms.getRoomID(ws);
+          let time = new Date().getTime();
+          rooms.getAllUsers(roomID).forEach((user) => {
+            user.socket.send(
+              PROTOCOL.MESSAGE +
+                PROTOCOL.SEPARATOR +
+                message.getChatMessage() +
+                PROTOCOL.SEPARATOR +
+                message.getUser() +
+                PROTOCOL.SEPARATOR +
+                time
             );
           });
         }

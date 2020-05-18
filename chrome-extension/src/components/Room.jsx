@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 
 function Room() {
-
   const [time, setTime] = useState(0);
   const [link, setLink] = useState("");
   const [room, setRoom] = useState("");
@@ -35,18 +34,18 @@ function Room() {
 
   useEffect(() => {
     sendMessage({ action: "get" }, (ans) => {
-      roomLink = ans[0]
-      myName = ans[1]
-      newRoom = ans[2]
+      roomLink = ans[0];
+      myName = ans[1];
+      newRoom = ans[2];
       if (roomLink) {
         setJoin(false);
         setCreate(false);
         setJoined(false);
         setLink(roomLink);
-        if (myName) {
-          setName(myName);
-          setNameInput(myName);
-        }
+      }
+      if (myName) {
+        setName(myName);
+        setNameInput(myName);
       }
       if (newRoom) {
         setRoom(newRoom);
@@ -60,18 +59,30 @@ function Room() {
       console.log(message);
       switch (message.action) {
         case "link":
-          sendMessage({ action: "session link", data: message.data })
-
+          sendMessage({
+            action: "session link",
+            data: message.data,
+            ws: message.ws,
+          });
           setJoin(false);
           setCreate(false);
           setJoined(false);
           setLink(message.data);
           break;
         case "joined":
+          sendMessage({ action: "joined", data: message.data });
           setJoin(false);
           setCreate(false);
           setJoined(true);
           saveRoom(message.data);
+          break;
+        case "msgReceived":
+          console.log("Popup Received " + message.data);
+          sendMessage(message);
+          break;
+        case "msgSent":
+          console.log("Popup Sent " + message.data);
+          sendMessage(message);
           break;
         default:
           break;
@@ -120,12 +131,12 @@ function Room() {
   };
 
   const saveName = (newName) => {
-    sendMessage({ action: "session name", data: newName })
+    sendMessage({ action: "session name", data: newName });
     setName(newName);
   };
 
   const saveRoom = (newRoom) => {
-    sendMessage({ action: "session room", data: newRoom })
+    sendMessage({ action: "session room", data: newRoom });
     setRoom(newRoom);
   };
 

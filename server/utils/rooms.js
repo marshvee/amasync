@@ -22,13 +22,19 @@ const Rooms = function () {
     return rooms.get(roomID).users;
   };
 
-  Rooms.getRoomID = (ws) => {
-    return users.get(ws);
-  };
-
   Rooms.getHost = (roomID) => {
     console.log(rooms.get(roomID) + "gethost");
     return rooms.get(roomID).host;
+  };
+
+  Rooms.getAllUsers = (roomID) => {
+    let users = Rooms.getUsers(roomID);
+    users.push(Rooms.getHost(roomID));
+    return users;
+  };
+
+  Rooms.getRoomID = (ws) => {
+    return users.get(ws);
   };
 
   return Rooms;

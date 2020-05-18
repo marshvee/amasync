@@ -20,8 +20,15 @@
   "content_scripts": [
     {
       "matches": ["*://*.primevideo.com/detail/*"],
-      "js": ["content.js"]
+      "css": ["/chatroom/main.812eadd5.chunk.css"],
+      "js": [
+        "content.js",
+        "/chatroom/2.8a35aefc.chunk.js",
+        "/chatroom/main.f3512aa8.chunk.js",
+        "/chatroom/runtime-main.eb2b931e.js"
+      ]
     }
   ],
-  "permissions": ["activeTab", "declarativeContent"]
+  "permissions": ["activeTab", "declarativeContent"],
+  "web_accessible_resources": ["/chatroom/main.812eadd5.chunk.css"]
 }

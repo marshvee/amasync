@@ -7,6 +7,7 @@ const PROTOCOL = {
   CREATED: "created",
   HOST_TIME: "hosttime",
   JOINED: "joined",
+  MESSAGE: "message",
   MOVE: "move",
   PLAY: "play",
   PAUSE: "pause",
@@ -15,7 +16,8 @@ const PROTOCOL = {
 };
 
 chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
-  let action = msg.action.split(" ")[0]
+  let action = msg.action.split(" ")[0];
+  console.log(msg);
   if (action == "getUrl") {
     sendResponse(window.location.href);
   } else if (action == "connect") {
@@ -25,22 +27,32 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
   } else if (action == "setup") {
     setup();
   } else if (action == "session") {
-    saveSession(msg.action.split(" ")[1], msg.data)
+    saveSession(msg.action.split(" ")[1], msg.data);
   } else if (action == "get") {
     sendResponse(getStorage());
+  } else if (action == "msgSent") {
+    console.log("Content Sent " + msg.data);
+    ws.send(
+      PROTOCOL.MESSAGE +
+        PROTOCOL.SEPARATOR +
+        msg.data.replace(new RegExp(PROTOCOL.SEPARATOR, "g", "-")) +
+        PROTOCOL.SEPARATOR +
+        sessionStorage.getItem("name")
+    );
   }
 });
 
 function getStorage() {
-  let link = sessionStorage.getItem("link")
-  let name = sessionStorage.getItem("name")
-  let room = sessionStorage.getItem("room")
-  return [link, room, name]
+  let link = sessionStorage.getItem("link");
+  let name = sessionStorage.getItem("name");
+  let room = sessionStorage.getItem("room");
+  return [link, room, name];
 }
 
 function saveSession(key, value) {
   sessionStorage.setItem(key, value);
 }
+
 function hostModePlay() {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
@@ -70,21 +82,21 @@ function createRoom(name) {
   console.log("creatingsocket");
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
-  ws = new WebSocket("wss://amasync.tk:8080");
+  ws = new WebSocket("ws://localhost:8080");
   ws.onmessage = onmessage;
   hostModePause();
   ws.onopen = () =>
     ws.send(
       PROTOCOL.CREATE +
-      PROTOCOL.SEPARATOR +
-      name +
-      PROTOCOL.SEPARATOR +
-      video.currentTime
+        PROTOCOL.SEPARATOR +
+        name +
+        PROTOCOL.SEPARATOR +
+        video.currentTime
     );
 }
 
 function joinRoom(name, room, time) {
-  ws = new WebSocket("wss://amasync.tk:8080");
+  ws = new WebSocket("ws://localhost:8080");
   ws.onmessage = onmessage;
   ws.onopen = () =>
     ws.send(
@@ -139,7 +151,7 @@ function setup() {
     console.log("mover tiempo");
     if (!me.iAmhost) {
       ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
-      hostModePause()
+      hostModePause();
     } else {
       console.log("content: host dio move");
       setTimeout(() => {
@@ -165,7 +177,7 @@ function onmessage(e) {
       let prefix = res.includes("?") ? "&" : "?";
       let data =
         res + prefix + "session=" + roomID + "&name=" + name + "&time=" + time;
-      sendMessagePop({ action: "link", data });
+      sendMessagePop({ action: "link", data, ws });
       hostModePause();
       break;
     case PROTOCOL.PLAY:
@@ -181,16 +193,17 @@ function onmessage(e) {
     case PROTOCOL.HOST_TIME:
       let videos = document.querySelectorAll("video");
       let video = videos[videos.length - 1];
-      hostModePause()
+      hostModePause();
       ws.send(
         PROTOCOL.HOST_TIME +
-        PROTOCOL.SEPARATOR +
-        rest[0] +
-        PROTOCOL.SEPARATOR +
-        video.currentTime
+          PROTOCOL.SEPARATOR +
+          rest[0] +
+          PROTOCOL.SEPARATOR +
+          video.currentTime
       );
       break;
     case PROTOCOL.MOVE:
       hostModeMove(rest[0]);
+      break;
   }
 }
