@@ -114,7 +114,7 @@ function Room() {
     sendMessage({ action: "setup" });
     sendMessage({
       action: "join",
-      data: [nameInput, room, time],
+      data: [nameInput, room],
     });
     saveName(nameInput);
   };

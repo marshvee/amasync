@@ -41,6 +41,65 @@ function getStorage() {
 function saveSession(key, value) {
   sessionStorage.setItem(key, value);
 }
+
+
+function sendMessagePop(message) {
+  chrome.runtime.sendMessage(message);
+}
+
+function setup() {
+  let videos = document.querySelectorAll("video");
+  let video = videos[videos.length - 1];
+  video.onplay = (e) => {
+    if (!me.iAmhost) {
+      hostModePause();
+    } else {
+      console.log("content: host dio play");
+      ws.send(PROTOCOL.PLAY);
+    }
+  };
+
+  video.addEventListener('pause', function(){
+    console.log("pause nuevo");
+    if (!me.iAmhost) {
+      hostModePlay();
+    } else {
+      console.log("content: host dio pause");
+      ws.send(PROTOCOL.PAUSE);
+    }
+})
+
+  let bar = document.querySelector(`#dv-web-player > div > div:nth-child(1) > div > div > 
+         div:nth-child(2) > div > div > div.scalingUiContainerBottom > div > div.controlsOverlay > 
+         div.bottomPanel > div:nth-child(1) > div > div.progressBarContainer`);
+  if (bar === null) {
+    function getElementByXpath(path) {
+      return document.evaluate(
+        path,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+    }
+    bar = getElementByXpath(
+      '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div[2]/div[1]/div[4]/div[2]/div[1]/div/div[2]'
+    );
+  }
+  bar.onclick = () => {
+    console.log("mover tiempo");
+    if (!me.iAmhost) {
+      ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
+      hostModePause()
+    } else {
+      console.log("content: host dio move");
+      setTimeout(() => {
+        ws.send(PROTOCOL.MOVE + PROTOCOL.SEPARATOR + video.currentTime);
+      }, 1000);
+    }
+  };
+}
+
 function hostModePlay() {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
@@ -83,7 +142,7 @@ function createRoom(name) {
     );
 }
 
-function joinRoom(name, room, time) {
+function joinRoom(name, room) {
   ws = new WebSocket("wss://amasync.tk:8080");
   ws.onmessage = onmessage;
   ws.onopen = () =>
@@ -91,67 +150,14 @@ function joinRoom(name, room, time) {
       PROTOCOL.JOIN + PROTOCOL.SEPARATOR + name + PROTOCOL.SEPARATOR + room
     );
   me.iAmhost = false;
-  let videos = document.querySelectorAll("video");
-  videos[videos.length - 1].currentTime = time;
-  hostModePause();
+  //Set time on host time
+  ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
+  hostModePause()
+
 }
 
-function setup() {
-  let videos = document.querySelectorAll("video");
-  let video = videos[videos.length - 1];
-  video.onplay = (e) => {
-    if (!me.iAmhost) {
-      hostModePause();
-    } else {
-      console.log("content: host dio play");
-      ws.send(PROTOCOL.PLAY);
-    }
-  };
 
-  video.onpause = (e) => {
-    console.log("pause");
-    if (!me.iAmhost) {
-      hostModePlay();
-    } else {
-      console.log("content: host dio pause");
-      ws.send(PROTOCOL.PAUSE);
-    }
-  };
 
-  let bar = document.querySelector(`#dv-web-player > div > div:nth-child(1) > div > div > 
-         div:nth-child(2) > div > div > div.scalingUiContainerBottom > div > div.controlsOverlay > 
-         div.bottomPanel > div:nth-child(1) > div > div.progressBarContainer`);
-  if (bar === null) {
-    function getElementByXpath(path) {
-      return document.evaluate(
-        path,
-        document,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null
-      ).singleNodeValue;
-    }
-    bar = getElementByXpath(
-      '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div[2]/div[1]/div[4]/div[2]/div[1]/div/div[2]'
-    );
-  }
-  bar.onclick = () => {
-    console.log("mover tiempo");
-    if (!me.iAmhost) {
-      ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
-      hostModePause()
-    } else {
-      console.log("content: host dio move");
-      setTimeout(() => {
-        ws.send(PROTOCOL.MOVE + PROTOCOL.SEPARATOR + video.currentTime);
-      }, 1000);
-    }
-  };
-}
-
-function sendMessagePop(message) {
-  chrome.runtime.sendMessage(message);
-}
 
 function onmessage(e) {
   console.log(e);
@@ -164,7 +170,7 @@ function onmessage(e) {
       let time = rest[2];
       let prefix = res.includes("?") ? "&" : "?";
       let data =
-        res + prefix + "session=" + roomID + "&name=" + name + "&time=" + time;
+        res + prefix + "session=" + roomID + "&name=" + name ;
       sendMessagePop({ action: "link", data });
       hostModePause();
       break;
