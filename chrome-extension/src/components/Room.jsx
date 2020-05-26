@@ -1,8 +1,13 @@
 /*global chrome*/
 import React, { useState, useEffect } from "react";
-
+import { Button, Container ,Row} from "react-bootstrap";
+import Register from "./Register";
+import Login from "./Login";
 function Room() {
+  const [registre, setRegistre] = useState(false);
+  const [login, setLogin] = useState(false);
 
+  const [user, setUser] = useState(null);
   const [time, setTime] = useState(0);
   const [link, setLink] = useState("");
   const [room, setRoom] = useState("");
@@ -10,7 +15,8 @@ function Room() {
   const [nameInput, setNameInput] = useState("");
   const [join, setJoin] = useState(false);
   const [joined, setJoined] = useState(false);
-  const [create, setCreate] = useState(true);
+  const [create, setCreate] = useState(false);
+
 
   let roomLink;
   let myName;
@@ -32,68 +38,67 @@ function Room() {
     }
     return queryParams;
   }
-
-  useEffect(() => {
-    sendMessage({ action: "get" }, (ans) => {
-      roomLink = ans[0]
-      myName = ans[1]
-      newRoom = ans[2]
-      if (roomLink) {
-        setJoin(false);
-        setCreate(false);
-        setJoined(false);
-        setLink(roomLink);
-        if (myName) {
-          setName(myName);
-          setNameInput(myName);
-        }
-      }
-      if (newRoom) {
-        setRoom(newRoom);
-        setJoin(false);
-        setCreate(false);
-        setJoined(false);
-      }
-    });
-
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log(message);
-      switch (message.action) {
-        case "link":
-          sendMessage({ action: "session link", data: message.data })
-
+  
+    useEffect(() => {
+      sendMessage({ action: "get" }, (ans) => {
+        roomLink = ans[0]
+        myName = ans[1]
+        newRoom = ans[2]
+        if (roomLink) {
           setJoin(false);
           setCreate(false);
           setJoined(false);
-          setLink(message.data);
-          break;
-        case "joined":
+          setLink(roomLink);
+          if (myName) {
+            setName(myName);
+            setNameInput(myName);
+          }
+        }
+        if (newRoom) {
+          setRoom(newRoom);
           setJoin(false);
           setCreate(false);
-          setJoined(true);
-          saveRoom(message.data);
-          break;
-        default:
-          break;
-      }
-    });
-
-    chrome.tabs.getSelected(null, (tab) => {
-      let url = tab.url;
-      let params = getQueryParams(url);
-      if ("session" in params) {
-        setCreate(false);
-        setJoined(!!newRoom);
-        setJoin(!newRoom);
-        setRoom(params.session);
-        setTime(params.time);
-      } else {
-        setJoin(false);
-        setJoined(false);
-        setCreate(!roomLink);
-      }
-    });
-  }, []);
+          setJoined(false);
+        }
+      });
+  
+      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        console.log(message);
+        switch (message.action) {
+          case "link":
+            sendMessage({ action: "session link", data: message.data })
+  
+            setJoin(false);
+            setCreate(false);
+            setJoined(false);
+            setLink(message.data);
+            break;
+          case "joined":
+            setJoin(false);
+            setCreate(false);
+            setJoined(true);
+            saveRoom(message.data);
+            break;
+          default:
+            break;
+        }
+      });
+  
+      chrome.tabs.getSelected(null, (tab) => {
+        let url = tab.url;
+        let params = getQueryParams(url);
+        if ("session" in params) {
+          setCreate(false);
+          setJoined(!!newRoom);
+          setJoin(!newRoom);
+          setRoom(params.session);
+          setTime(params.time);
+        } else {
+          setJoin(false);
+          setJoined(false);
+        }
+      });
+    }, []); 
 
   function sendMessage(msg, callback) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -130,8 +135,46 @@ function Room() {
   };
 
   return (
-    <div>
-      <h1>Welcome to Amasync{!!name && <span>, {name}</span>}!</h1>
+    <Container>
+      <h1 id="welcome">Welcome to Amasync{!!name && <span>, {name}</span>}!</h1>
+      <Row>
+        <Button
+          className=" button-outline"
+          onClick={() => { setRegistre(false); setCreate(!create); setJoin(false); setLogin(false) }}
+        >
+          Anonymus 
+        </Button>
+      </Row>
+      <Row>      <Button
+        className=" button-outline"
+
+        onClick={() => { setRegistre(false); setCreate(false); setJoin(false); setLogin(!login) }}
+      >
+        Log In
+        </Button>
+      </Row>
+      <Row>
+        <Button
+          className=" button-outline"
+          variant="outline-primary"
+          onClick={() => { setRegistre(!registre); setCreate(false); setJoin(false); setLogin(false) }}
+        >
+          Register
+        </Button>
+      </Row>
+
+
+      {
+        registre ? (<>
+          <Register setUser={setUser} />
+        </>) : (
+            <></>
+          )
+      }
+      {login && (
+        <Login setUser={setUser} />
+
+      )}
 
       {create && (
         <div id="new">
@@ -166,7 +209,7 @@ function Room() {
       )}
       {!!link && <div> Share this link with your friends {link}</div>}
       {joined && <div> You're currently in room {room}</div>}
-    </div>
+    </Container>
   );
 }
 
