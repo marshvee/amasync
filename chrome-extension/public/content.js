@@ -39,7 +39,7 @@ function getStorage() {
 }
 
 function saveSession(key, value) {
-  sessionStorage.setItem(key, value);
+  //sessionStorage.setItem(key, value);
 }
 
 
@@ -59,15 +59,8 @@ function setup() {
     }
   };
 
-  video.addEventListener('pause', function(){
-    console.log("pause nuevo");
-    if (!me.iAmhost) {
-      hostModePlay();
-    } else {
-      console.log("content: host dio pause");
-      ws.send(PROTOCOL.PAUSE);
-    }
-})
+  
+    videos[videos.length - 1].addEventListener('pause', onPause);
 
   let bar = document.querySelector(`#dv-web-player > div > div:nth-child(1) > div > div > 
          div:nth-child(2) > div > div > div.scalingUiContainerBottom > div > div.controlsOverlay > 
@@ -100,22 +93,34 @@ function setup() {
   };
 }
 
+function onPause() {
+
+  console.log("pause nuevo");
+  if (!me.iAmhost) {
+    hostModePlay();
+  } else {
+    console.log("content: host dio pause");
+    ws.send(PROTOCOL.PAUSE);
+  }
+
+}
 function hostModePlay() {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
   let temp = video.onplay;
-  video.onplay = null;
-  video.play().then(() => (videos[videos.length - 1].onplay = temp));
+  videos[videos.length - 1].onplay = null;
+  videos[videos.length - 1].play().then(() => (videos[videos.length - 1].onplay = temp));
 }
 
 function hostModePause() {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
-  let temp = video.onpause;
-  video.onpause = null;
-  video.pause();
+
+  videos[videos.length - 1].removeEventListener('pause',onPause);
+  videos[videos.length - 1].pause();
   setTimeout(() => {
-    videos[videos.length - 1].onpause = temp;
+
+    videos[videos.length - 1].addEventListener('pause', onPause);
   }, 1000);
 }
 
@@ -123,6 +128,7 @@ function hostModeMove(time) {
   console.log("actualizando tiempo " + time);
   let videos = document.querySelectorAll("video");
   videos[videos.length - 1].currentTime = time;
+  setTimeout(() => {videos[videos.length - 1].play()},500);
 }
 
 function createRoom(name) {
@@ -145,14 +151,16 @@ function createRoom(name) {
 function joinRoom(name, room) {
   ws = new WebSocket("wss://amasync.tk:8080");
   ws.onmessage = onmessage;
-  ws.onopen = () =>
+  ws.onopen = () => {
     ws.send(
       PROTOCOL.JOIN + PROTOCOL.SEPARATOR + name + PROTOCOL.SEPARATOR + room
     );
-  me.iAmhost = false;
+    me.iAmhost = false;
+
+    ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
+    hostModePause();
+  }
   //Set time on host time
-  ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
-  hostModePause()
 
 }
 
@@ -170,7 +178,7 @@ function onmessage(e) {
       let time = rest[2];
       let prefix = res.includes("?") ? "&" : "?";
       let data =
-        res + prefix + "session=" + roomID + "&name=" + name ;
+        res + prefix + "session=" + roomID + "&name=" + name;
       sendMessagePop({ action: "link", data });
       hostModePause();
       break;
@@ -198,5 +206,6 @@ function onmessage(e) {
       break;
     case PROTOCOL.MOVE:
       hostModeMove(rest[0]);
+
   }
 }
