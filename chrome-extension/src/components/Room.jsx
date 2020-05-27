@@ -42,7 +42,7 @@ function Room() {
   
     useEffect(() => {
 
-      fetch("/getUser", { credentials: "include" })
+      fetch("https://amasync.tk:8080/getUser", { credentials: "include" })
       .then((res) => res.json())
       .then((user) => {
         console.log("getUser", user);
