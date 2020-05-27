@@ -31,14 +31,14 @@ function Register(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
     let user = {
-      user: { username, nombre, apellido, password},
+      user: { username, nombre, apellido, password },
     };
     console.log(user);
     postData("/user/new", user).then((data) => {
       if (data.error) {
         //avisar al usuario del error
       } else {
-        user= { username, password};
+        user = { username, password };
         postData("/login", user).then((data) => props.setUser(data.user));
       }
     });
@@ -46,39 +46,45 @@ function Register(props) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Row>
-        <Form.Group as={Col} controlId="formGridUsername">
-          <Form.Label>Email</Form.Label>
+
+      <Form.Group controlId="formGridUsername">
+        <Form.Label>Email</Form.Label>
+        <Form.Row>
           <Form.Control
             required
             type="email"
             placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
           />
-        </Form.Group>
+        </Form.Row>
+      </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            required
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-      </Form.Row>
-      <Form.Row>
-        <Form.Group as={Col} controlId="formGridNombre">
-          <Form.Label>Name</Form.Label>
+      <Form.Group controlId="formGridPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Row>
+        <Form.Control
+          required
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        </Form.Row>
+      </Form.Group>
+
+      <Form.Group controlId="formGridNombre">
+        <Form.Label>Name</Form.Label>
+        <Form.Row>
+
           <Form.Control
             required
             type="text"
             placeholder="Name"
             onChange={(e) => setNombre(e.target.value)}
           />
-        </Form.Group>
-       
-      </Form.Row>
+
+
+        </Form.Row>
+      </Form.Group>
       <Button variant="primary" type="submit">
         Register
       </Button>

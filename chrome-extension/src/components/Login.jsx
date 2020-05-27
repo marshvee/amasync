@@ -6,10 +6,9 @@ function Login(props) {
   const [password, setPassword] = useState("");
 
   const [errorO, setError] = useState(false);
-  const [nutri, setNutri] = useState(false);
 
   const handleSubmit = () => {
-    let paciente = { username, password, nutri };
+    let paciente = { username, password };
     console.log(paciente);
     postData("/login", paciente)
       .then((data) => {
@@ -34,27 +33,33 @@ function Login(props) {
           </Alert.Heading>
         </Alert>
       ) : (
-        <></>
-      )}
+          <></>
+        )}
 
       <Form >
-      <Form.Row>
-        <Form.Control
-          type="text"
-          placeholder="Username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-</Form.Row>
-<Form.Row>
-        <Form.Control
-          type="password"
-          placeholder="Password"
-          className=" ml-sm-2"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-</Form.Row>
-        
-        <Button variant="primary" className=" ml-sm-2" onClick={handleSubmit}>
+      <Form.Group>
+      <Form.Label>UserName</Form.Label>
+        <Form.Row>
+          <Form.Control
+            type="text"
+            placeholder="Username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </Form.Row>
+        </Form.Group>
+        <Form.Group>
+          
+      <Form.Label>Password</Form.Label>
+        <Form.Row>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            className=" ml-sm-2"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Row>
+        </Form.Group>
+        <Button variant="primary" className=" ml-sm-2" onClick={handleSubmit} >
           Login
         </Button>
       </Form>

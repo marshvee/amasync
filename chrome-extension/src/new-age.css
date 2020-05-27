@@ -5,11 +5,11 @@ body {
   background: linear-gradient(to left,  #09b1e9,#1a242e);
 
   font-family: 'Muli', 'Helvetica', 'Arial', 'sans-serif';
+  width: 200px;
+  color:white;
 }
-#welcome{
-  
-  color: #fafafa;
-}
+
+
 
 a {
   color: #f8981d;
@@ -29,7 +29,7 @@ hr {
   max-width: 100px;
   margin: 25px auto 0;
   border-width: 1px;
-  border-color: rgba(34, 34, 34, 0.1);
+  border-color: rgba(252, 3, 3, 0.1);
 }
 
 hr.light {
@@ -95,9 +95,19 @@ footer ul li a:hover, footer ul li a:focus, footer ul li a:active, footer ul li 
 }
 
 Button{
-  color:white;
+  color:#1a242e;
   background-color: #f8981d;
   padding: 2%;
   margin: 2%;
+  border-color: silver;
 }
 
+.form-group{
+  padding: 0 0 5% 0;
+}
+
+#back{
+  color:white;
+  background-color: #1a242e;
+  border-color: #396fc0;
+}
