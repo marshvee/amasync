@@ -35,7 +35,7 @@ Nodejs >= 10, npm, react
 - Open google chrome and write ```chrome://extensions``` in the navegation bar
 - Enable developer mode and click LOAD UNPACKED 
 ![tutorial extension](https://developer.chrome.com/static/images/get_started/load_extension.png)
-- Select the folder ```amasync/chrome-extension/build```
+- Select the unziped folder if you downloaded it from our landing page or  ```amasync/chrome-extension/build``` if you cloned it
 
 # How to use ✅ 
 *Note: Your friends must have an PrimeVideo account*
