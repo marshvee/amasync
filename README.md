@@ -15,9 +15,9 @@ It has the following functionalities:
 - Chats in room
 - Cutomizable name of users
 
-# Deployment 💻:
+# Instructions 💻:
 
-
+If you downloaded the zip skip to section **Add Extension**
 ## Prerequisites: 
 Nodejs >= 10, npm, react
 
@@ -31,6 +31,7 @@ Nodejs >= 10, npm, react
   npm install
   npm run build
   ```
+# Add Extension 
 - Open google chrome and write ```chrome://extensions``` in the navegation bar
 - Enable developer mode and click LOAD UNPACKED 
 ![tutorial extension](https://developer.chrome.com/static/images/get_started/load_extension.png)
