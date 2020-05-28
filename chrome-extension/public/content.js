@@ -12,6 +12,7 @@ const PROTOCOL = {
   PAUSE: "pause",
   RESTART: "restart",
   SEPARATOR: ";",
+  EXIT:"exit",
 };
 
 chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
@@ -28,23 +29,36 @@ chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
     saveSession(msg.action.split(" ")[1], msg.data)
   } else if (action == "get") {
     sendResponse(getStorage());
+  } else if (action =="clear"){
+    clearStorage();
+  } else if(action=="exit"){
+    exit(msg.data);
   }
 });
-
+function clearStorage(){
+  sessionStorage.removeItem("link")
+  sessionStorage.removeItem("name")
+  sessionStorage.removeItem("room")
+  
+  sessionStorage.removeItem("joined")
+}
 function getStorage() {
   let link = sessionStorage.getItem("link")
   let name = sessionStorage.getItem("name")
   let room = sessionStorage.getItem("room")
-  ans=["","",""];
+  let joined = sessionStorage.getItem("joined")
+  ans=["","","",""];
   ans[0]=link? link:"";
   ans[1]=name? name:"";
   ans[2]=room? room:"";
+  ans[3]=joined? joined:"";
   return ans;
 }
 
 function saveSession(key, value) {
   sessionStorage.setItem(key, value);
 }
+
 
 
 function sendMessagePop(message) {
@@ -135,12 +149,16 @@ function hostModeMove(time) {
   setTimeout(() => {videos[videos.length - 1].play()},500);
 }
 
+function exit(room){
+  hostModePause();
+  ws.send(PROTOCOL.EXIT+PROTOCOL.SEPARATOR+room);
+}
 function createRoom(name) {
   console.log("creatingsocket");
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
-  /* ws = new WebSocket("wss://amasync.tk:8080"); */
-  ws = new WebSocket("wss://amasync.tk:8080");
+  /* ws = new WebSocket("wss://localhost:8080"); */
+  ws = new WebSocket("wss://localhost:8080");
   ws.onmessage = onmessage;
   hostModePause();
   ws.onopen = () =>
@@ -152,8 +170,8 @@ function createRoom(name) {
 }
 
 function joinRoom(name, room) {
-  /* ws = new WebSocket("wss://amasync.tk:8080"); */
-  ws = new WebSocket("wss://amasync.tk:8080");
+  /* ws = new WebSocket("wss://localhost:8080"); */
+  ws = new WebSocket("wss://localhost:8080");
   ws.onmessage = onmessage;
   ws.onopen = () => {
     ws.send(
@@ -163,6 +181,7 @@ function joinRoom(name, room) {
 
     ws.send(PROTOCOL.RESTART + PROTOCOL.SEPARATOR + PROTOCOL.MOVE);
     hostModePause();
+    saveSession("joined",true);
   }
   //Set time on host time
 

@@ -19,11 +19,9 @@ function Room() {
   const [joined, setJoined] = useState(false);
   const [create, setCreate] = useState(false);
 
-  let roomLink;
-  let newRoom;
-
+ 
   const logout = () => {
-    fetch("https://amasync.tk:8080/logout").then(() => {
+    fetch("https://localhost:8080/logout").then(() => {
       setUser(null);
       setRegistre(false);
       setCreate(false);
@@ -59,7 +57,7 @@ function Room() {
   }
 
   useEffect(() => {
-    fetch("https://amasync.tk:8080/getUser", { credentials: "include" })
+    fetch("https://localhost:8080/getUser", { credentials: "include" })
       .then((res) => res.json())
       .then((user) => {
         console.log("getUser", user);
@@ -67,22 +65,27 @@ function Room() {
       });
 
     sendMessage({ action: "get" }, (ans) => {
-      roomLink = ans[0];
+      setLink(ans[0]);
       setName(ans[1]);
-      newRoom = ans[2];
-      if (roomLink) {
+      setRoom(ans[2]);
+      setJoined(ans[3]);
+
+      if (link) {
         setJoin(false);
         setCreate(false);
         setJoined(false);
         setButtons(false);
-        setLink(roomLink);
       }
-      if (newRoom) {
-        setRoom(newRoom);
+      if (room) {
         setButtons(false);
         setJoin(false);
         setCreate(false);
         setJoined(false);
+      }
+      if (joined) {
+        setButtons(false);
+        setJoin(false);
+        setCreate(false);
       }
     });
 
@@ -115,8 +118,7 @@ function Room() {
       let params = getQueryParams(url);
       if ("session" in params) {
         setCreate(false);
-        setJoined(newRoom);
-        setJoin(!newRoom);
+        room? setJoined(true):setJoin(true);
         setRoom(params.session);
         setButtons(false);
       } else {
@@ -164,7 +166,13 @@ function Room() {
     });
     saveName(nameInput);
   };
-
+  const onExitClick = () => {
+    sendMessage({
+      action: "exit",
+      data: room,
+    });
+    sendMessage({ action: "clear" });
+  }
   const saveName = (newName) => {
     sendMessage({ action: "session name", data: newName });
     setNameInput(newName);
@@ -203,142 +211,148 @@ function Room() {
               </Row>
             </>
           ) : (
-            <>
-              <Row>
-                <Button
-                  className=" button-outline"
-                  onClick={() => {
-                    setRegistre(false);
-                    setCreate(!create);
-                    setJoin(false);
-                    setLogin(false);
-                    setButtons(false);
-                  }}
-                >
-                  Anonymous
+              <>
+                <Row>
+                  <Button
+                    className=" button-outline"
+                    onClick={() => {
+                      setRegistre(false);
+                      setCreate(!create);
+                      setJoin(false);
+                      setLogin(false);
+                      setButtons(false);
+                    }}
+                  >
+                    Anonymous
                 </Button>
-              </Row>
+                </Row>
 
-              <Row>
-                {" "}
-                <Button
-                  className=" button-outline"
-                  onClick={() => {
-                    setRegistre(false);
-                    setCreate(false);
-                    setJoin(false);
-                    setLogin(!login);
-                    setButtons(false);
-                  }}
-                >
-                  Log In
+                <Row>
+                  {" "}
+                  <Button
+                    className=" button-outline"
+                    onClick={() => {
+                      setRegistre(false);
+                      setCreate(false);
+                      setJoin(false);
+                      setLogin(!login);
+                      setButtons(false);
+                    }}
+                  >
+                    Log In
                 </Button>
-                <Button
-                  className=" button-outline"
-                  variant="outline-primary"
-                  onClick={() => {
-                    setRegistre(!registre);
-                    setCreate(false);
-                    setJoin(false);
-                    setLogin(false);
-                    setButtons(false);
-                  }}
-                >
-                  Register
+                  <Button
+                    className=" button-outline"
+                    variant="outline-primary"
+                    onClick={() => {
+                      setRegistre(!registre);
+                      setCreate(false);
+                      setJoin(false);
+                      setLogin(false);
+                      setButtons(false);
+                    }}
+                  >
+                    Register
                 </Button>
-              </Row>
-            </>
-          )}
+                </Row>
+              </>
+            )}
         </>
       ) : (
-        <>
-          {link || joined || join ? (
-            <>
-              {link && (
-                <div>
-                  {" "}
-                  <h3> Share this link with your friends</h3>
-                  <br />
-                  <Row>
-                    <input id="link" value={link} readOnly />
+          <>
+            {link || joined || join ? (
+              <>
+                {link && (
+                  <div>
+                    {" "}
+                    <h3> Share this link with your friends</h3>
+                    <br />
+                    <Row>
+                      <input id="link" value={link} readOnly />
 
-                    <Button id="copy" onClick={copyLink}>
-                      <FontAwesomeIcon icon={faCopy} />
-                    </Button>
-                  </Row>
-                </div>
-              )}
-              {joined && <div> You're currently in the room of {name} </div>}
-              {join && (
-                <div id="join">
-                  <h6>
-                    You're joining the room of: <span id="id-sala">{name}</span>
-                  </h6>
-                  <h6>Please insert your name: </h6>
-                  <input
-                    id="nombre"
-                    placeholder="Name"
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                  />
-                  <button id="join" onClick={onJoinClick}>
-                    Join
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {create && (
-                <>
-                  {!user ? (
-                    <Form
-                      onSubmit={() => {
-                        onCreateClick();
-                      }}
-                    >
-                      <Form.Group controlId="formGridUsername">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Row>
-                          <Form.Control
-                            required
-                            id="nombre-host"
-                            placeholder="Name"
-                            value={nameInput}
-                            onChange={(e) => setNameInput(e.target.value)}
-                          />
-                        </Form.Row>
-                      </Form.Group>
-                      <Button id="start" type="submit">
-                        Start party
+                      <Button id="copy" onClick={copyLink}>
+                        <FontAwesomeIcon icon={faCopy} />
                       </Button>
-                    </Form>
-                  ) : (
+                    </Row>
+                  </div>
+                )}
+                {joined && <> <div> You're currently in the room of {name} </div>
+                  <Row>
+                    <button id="exit" onClick={onExitClick}>
+                      Exit
+                  </button>
+                  </Row></>
+                }
+                {join && (
+                  <div id="join">
+                    <h6>
+                      You're joining the room of: <span id="id-sala">{name}</span>
+                    </h6>
+                    <h6>Please insert your name: </h6>
+                    <input
+                      id="nombre"
+                      placeholder="Name"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                    />
+                    <button id="join" onClick={onJoinClick}>
+                      Join
+                  </button>
+                  </div>
+                )}
+              </>
+            ) : (
+                <>
+                  {create && (
                     <>
-                      <Form
-                        onSubmit={() => {
-                          onCreateClickLoged();
-                        }}
-                      >
-                        <Button id="start" type="submit">
-                          Start party
+                      {!user ? (
+                        <Form
+                          onSubmit={() => {
+                            onCreateClick();
+                          }}
+                        >
+                          <Form.Group controlId="formGridUsername">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Row>
+                              <Form.Control
+                                required
+                                id="nombre-host"
+                                placeholder="Name"
+                                value={nameInput}
+                                onChange={(e) => setNameInput(e.target.value)}
+                              />
+                            </Form.Row>
+                          </Form.Group>
+                          <Button id="start" type="submit">
+                            Start party
+                      </Button>
+                        </Form>
+                      ) : (
+                          <>
+                            <Form
+                              onSubmit={() => {
+                                onCreateClickLoged();
+                              }}
+                            >
+                              <Button id="start" type="submit">
+                                Start party
                         </Button>
-                      </Form>
+                            </Form>
+                          </>
+                        )}
                     </>
                   )}
+                  {login && <Login setUser={setUser} enter={enter} />}
+
+                  {registre && <Register setUser={setUser} enter={enter} />}
+
+                  <button id="back" onClick={() => setButtons(true)}>
+                    Back
+              </button>
                 </>
               )}
-              {login && <Login setUser={setUser} enter={enter} />}
-
-              {registre && <Register setUser={setUser} enter={enter} />}
-
-              <button id="back" onClick={() => setButtons(true)}>
-                Back
-              </button>
-            </>
-          )}
-        </>
-      )}
+          </>
+        )}
     </Container>
   );
 }
