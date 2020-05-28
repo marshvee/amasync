@@ -42,9 +42,9 @@ Nodejs >= 10, npm, react
 
 Log into your PrimeVideo account
 ## Create a room
-- Go to a movie/Serie you want to watch with your friends and play it
-- Click on Anonymus if you want to create a temporary room or LogIn for a recurrent one
+- Go to a movie/Serie you want to watch with your friends and open the description
 - ⚠️**Click on the extension's icon**⚠️
+- Click on Anonymus if you want to create a temporary room or LogIn for a recurrent one
 - Click on *Create room* and share the link with your friends
 
 
