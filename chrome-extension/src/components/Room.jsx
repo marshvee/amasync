@@ -33,6 +33,14 @@ function Room() {
     });
   };
 
+  const enter = () => {
+    setRegistre(false);
+    setCreate(false);
+    setJoin(false);
+    setLogin(false);
+    setButtons(true);
+  };
+
   function getQueryParams(url) {
     let queryParams = {};
     //create an anchor tag to use the property called search
@@ -320,9 +328,9 @@ function Room() {
                   )}
                 </>
               )}
-              {login && <Login setUser={setUser} />}
+              {login && <Login setUser={setUser} enter={enter} />}
 
-              {registre && <Register setUser={setUser} />}
+              {registre && <Register setUser={setUser} enter={enter} />}
 
               <button id="back" onClick={() => setButtons(true)}>
                 Back

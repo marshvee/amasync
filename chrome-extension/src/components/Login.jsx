@@ -16,6 +16,7 @@ function Login(props) {
           setError(true);
         } else {
           props.setUser(data.user);
+          props.enter();
           setError(false);
         }
       })
@@ -28,9 +29,7 @@ function Login(props) {
     <>
       {errorO ? (
         <Alert variant="danger" onClose={() => setError(false)} dismissible>
-          <Alert.Heading>
-            El usuario o la contraseña son incorrectos
-          </Alert.Heading>
+          <Alert.Heading>Username or password is wrong.</Alert.Heading>
         </Alert>
       ) : (
         <></>

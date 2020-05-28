@@ -36,7 +36,10 @@ function Register(props) {
         //avisar al usuario del error
       } else {
         user = { username, password };
-        postData("/login", user).then((data) => props.setUser(data.user));
+        postData("/login", user).then((data) => {
+          props.setUser(data.user);
+          props.enter();
+        });
       }
     });
   };
