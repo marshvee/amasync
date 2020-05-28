@@ -4,7 +4,7 @@ import { Col, Form, Button } from "react-bootstrap";
 //Método para hacer post con fetch
 async function postData(url = "", data = {}) {
   // Default options are marked with *
-  const response = await fetch("https://amasync.tk:8080"+url, {
+  const response = await fetch("https://amasync.tk:8080" + url, {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -43,7 +43,6 @@ function Register(props) {
 
   return (
     <Form onSubmit={handleSubmit}>
-
       <Form.Group controlId="formGridUsername">
         <Form.Label>Email</Form.Label>
         <Form.Row>
@@ -59,27 +58,24 @@ function Register(props) {
       <Form.Group controlId="formGridPassword">
         <Form.Label>Password</Form.Label>
         <Form.Row>
-        <Form.Control
-          required
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <Form.Control
+            required
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Form.Row>
       </Form.Group>
 
       <Form.Group controlId="formGridName">
         <Form.Label>Name</Form.Label>
         <Form.Row>
-
           <Form.Control
             required
             type="text"
             placeholder="Name"
             onChange={(e) => setName(e.target.value)}
           />
-
-
         </Form.Row>
       </Form.Group>
       <Button variant="primary" type="submit">
