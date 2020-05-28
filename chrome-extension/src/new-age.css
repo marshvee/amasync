@@ -101,6 +101,7 @@ Button{
   margin: 2%;
   border-color: silver;
   font-weight: bolder;
+  cursor: pointer;
 }
 
 .form-group{
