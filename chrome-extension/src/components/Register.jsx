@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 
 //Método para hacer post con fetch
 async function postData(url = "", data = {}) {
@@ -25,6 +25,8 @@ function Register(props) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
+  const [errorO, setError] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let user = {
@@ -34,7 +36,9 @@ function Register(props) {
     postData("/user/new", user).then((data) => {
       if (data.error) {
         //avisar al usuario del error
+        setError(true);
       } else {
+        setError(false);
         user = { username, password };
         postData("/login", user).then((data) => {
           props.setUser(data.user);
@@ -45,46 +49,55 @@ function Register(props) {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="formGridUsername">
-        <Form.Label>Email</Form.Label>
-        <Form.Row>
-          <Form.Control
-            required
-            type="email"
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Row>
-      </Form.Group>
+    <>
+      {errorO ? (
+        <Alert variant="danger" onClose={() => setError(false)} dismissible>
+          <Alert.Heading>Email has already been registered.</Alert.Heading>
+        </Alert>
+      ) : (
+        <></>
+      )}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formGridUsername">
+          <Form.Label>Email</Form.Label>
+          <Form.Row>
+            <Form.Control
+              required
+              type="email"
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Row>
+        </Form.Group>
 
-      <Form.Group controlId="formGridPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Row>
-          <Form.Control
-            required
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Row>
-      </Form.Group>
+        <Form.Group controlId="formGridPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Row>
+            <Form.Control
+              required
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Row>
+        </Form.Group>
 
-      <Form.Group controlId="formGridName">
-        <Form.Label>Name</Form.Label>
-        <Form.Row>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Name"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Form.Row>
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Register
-      </Button>
-    </Form>
+        <Form.Group controlId="formGridName">
+          <Form.Label>Name</Form.Label>
+          <Form.Row>
+            <Form.Control
+              required
+              type="text"
+              placeholder="Name"
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Form.Row>
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Register
+        </Button>
+      </Form>
+    </>
   );
 }
 export default Register;
