@@ -11,7 +11,7 @@ const PROTOCOL = {
   PLAY: "play",
   PAUSE: "pause",
   RESTART: "restart",
-  SEPARATOR: " ",
+  SEPARATOR: ";",
 };
 
 chrome.extension.onMessage.addListener(function (msg, sender, sendResponse) {
@@ -139,8 +139,8 @@ function createRoom(name) {
   console.log("creatingsocket");
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
+  /* ws = new WebSocket("wss://amasync.tk:8080"); */
   ws = new WebSocket("wss://amasync.tk:8080");
-  /* ws = new WebSocket("wss://localhost:8080"); */
   ws.onmessage = onmessage;
   hostModePause();
   ws.onopen = () =>
@@ -152,8 +152,8 @@ function createRoom(name) {
 }
 
 function joinRoom(name, room) {
+  /* ws = new WebSocket("wss://amasync.tk:8080"); */
   ws = new WebSocket("wss://amasync.tk:8080");
-  /* ws = new WebSocket("wss://localhost:8080"); */
   ws.onmessage = onmessage;
   ws.onopen = () => {
     ws.send(
