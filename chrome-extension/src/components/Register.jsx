@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Form, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 //Método para hacer post con fetch
 async function postData(url = "", data = {}) {
