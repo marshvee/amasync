@@ -23,7 +23,7 @@ function Room() {
   let newRoom;
 
   const logout = () => {
-    fetch("https://amasync.tk:8080//logout").then(() => {
+    fetch("https://amasync.tk:8080/logout").then(() => {
       setUser(null);
       setRegistre(false);
       setCreate(false);
