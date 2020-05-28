@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Button, Container, Row ,Form} from "react-bootstrap";
 import Register from "./Register";
 import Login from "./Login";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 function Room() {
   const [registre, setRegistre] = useState(false);
   const [login, setLogin] = useState(false);
@@ -20,7 +22,7 @@ function Room() {
 
 
   let roomLink;
-  let myName;
+  let hostName;
   let newRoom;
 
   function getQueryParams(url) {
@@ -43,16 +45,15 @@ function Room() {
     useEffect(() => {
       sendMessage({ action: "get" }, (ans) => {
         roomLink = ans[0]
-        myName = ans[1]
+        hostName = ans[1]
         newRoom = ans[2]
         if (roomLink) {
           setJoin(false);
           setCreate(false);
           setJoined(false);
           setLink(roomLink);
-          if (myName) {
-            setName(myName);
-            setNameInput(myName);
+          if (hostName) {
+            setName(hostName);
           }
         }
         if (newRoom) {
@@ -90,7 +91,7 @@ function Room() {
         let params = getQueryParams(url);
         if ("session" in params) {
           setCreate(false);
-          setJoined(!!newRoom);
+          setJoined(newRoom);
           setJoin(!newRoom);
           setRoom(params.session);
           setTime(params.time);
@@ -105,6 +106,13 @@ function Room() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, msg, callback);
     });
+  }
+
+  function copyLink(){
+    let elemlink= document.getElementById("link");
+    elemlink.select()
+    elemlink.setSelectionRange(0, 99999); /*For mobile devices*/
+    document.execCommand("copy");
   }
 
   const onCreateClick = () => {
@@ -137,7 +145,7 @@ function Room() {
 
   return (
     <Container>
-      <h1 id="welcome">Welcome to Amasync{!!name && <span>, {name}</span>}!</h1>
+      <h1 id="welcome">Welcome to Amasync{nameInput && <span>, {nameInput}</span>}!</h1>
       {buttons ?
         <>
           <Row>
@@ -165,13 +173,27 @@ function Room() {
               Register
         </Button>
           </Row>
-
-
-
-          {join && (
+          
+        </> :
+        <>
+          {link || joined ?
+          
+            <>
+              {link &&   <div> <h3> Share this link with your friends</h3>
+              <br/>
+              <Row>
+              <input id="link" value={link} readOnly/>
+               
+               
+               <Button id="copy" onClick={copyLink}><FontAwesomeIcon  icon={faCopy}/></Button>
+               </Row>
+               </div>}
+               {joined && <div> You're currently in the room of {hostName} </div>}
+            </> : <>
+            {join && (
             <div id="join">
               <h6>
-                You're joining room: <span id="id-sala">{room}</span>
+                You're joining the room of: <span id="id-sala">{hostName}</span>
               </h6>
               <h6>Please insert your name: </h6>
               <input
@@ -185,17 +207,8 @@ function Room() {
           </button>
             </div>
           )}
-        </> :
-        <>
-          {link || joined ?
-          
-            <>
-              {link && <div> Share this link with your friends {link}</div>}
-              {joined && <div> You're currently in room {room}</div>}
-            </> : <>
-            
               {create && (
-                <Form onSubmit={onCreateClick}>
+                <Form onSubmit={()=>{onCreateClick();setButtons(false)}}>
                 
                   <Form.Group  controlId="formGridUsername">
                     <Form.Label>Name</Form.Label>
