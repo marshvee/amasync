@@ -35,7 +35,11 @@ function getStorage() {
   let link = sessionStorage.getItem("link")
   let name = sessionStorage.getItem("name")
   let room = sessionStorage.getItem("room")
-  return [link,  name, room]
+  ans=["","",""];
+  ans[0]=link? link:"";
+  ans[1]=name? name:"";
+  ans[2]=room? room:"";
+  return ans;
 }
 
 function saveSession(key, value) {

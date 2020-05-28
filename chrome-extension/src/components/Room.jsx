@@ -42,7 +42,7 @@ function Room() {
   
     useEffect(() => {
 
-      fetch("https://amasync.tk:8080/getUser")
+      fetch("https://amasync.tk:8080/getUser", { credentials: "include" })
       .then((res) => res.json())
       .then((user) => {
         console.log("getUser", user);
@@ -50,9 +50,9 @@ function Room() {
       });
       
       sendMessage({ action: "get" }, (ans) => {
-        roomLink = ans[0]
+        roomLink = ans[0];
         setName( ans[1]);
-        newRoom = ans[2]
+        newRoom = ans[2];
         if (roomLink) {
           setJoin(false);
           setCreate(false);

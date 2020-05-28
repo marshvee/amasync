@@ -23,5 +23,5 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["activeTab", "declarativeContent"]
+  "permissions": ["activeTab", "declarativeContent","storage","https://amasync.tk/"]
 }
