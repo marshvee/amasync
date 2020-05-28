@@ -37,7 +37,7 @@ function Login(props) {
 
       <Form >
       <Form.Group>
-      <Form.Label>UserName</Form.Label>
+      <Form.Label>Email</Form.Label>
         <Form.Row>
           <Form.Control
             type="text"
