@@ -16,6 +16,7 @@ function Login(props) {
           setError(true);
         } else {
           props.setUser(data.user);
+          setError(false);
         }
       })
       .catch((err) => {
@@ -32,33 +33,32 @@ function Login(props) {
           </Alert.Heading>
         </Alert>
       ) : (
-          <></>
-        )}
+        <></>
+      )}
 
-      <Form >
-      <Form.Group>
-      <Form.Label>Email</Form.Label>
-        <Form.Row>
-          <Form.Control
-            type="text"
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Row>
+      <Form>
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
+          <Form.Row>
+            <Form.Control
+              type="text"
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Row>
         </Form.Group>
         <Form.Group>
-          
-      <Form.Label>Password</Form.Label>
-        <Form.Row>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            className=" ml-sm-2"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Row>
+          <Form.Label>Password</Form.Label>
+          <Form.Row>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              className=" ml-sm-2"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Row>
         </Form.Group>
-        <Button variant="primary" className=" ml-sm-2" onClick={handleSubmit} >
+        <Button variant="primary" className=" ml-sm-2" onClick={handleSubmit}>
           Login
         </Button>
       </Form>
@@ -68,7 +68,7 @@ function Login(props) {
   //Método para hacer post con fetch
   async function postData(url = "", data = {}) {
     // Default options are marked with *
-    const response = await fetch("https://localhost:8080"+url, {
+    const response = await fetch("https://amasync.tk:8080" + url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
