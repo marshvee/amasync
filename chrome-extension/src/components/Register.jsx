@@ -22,16 +22,13 @@ async function postData(url = "", data = {}) {
 
 function Register(props) {
   const [username, setUsername] = useState("");
-  const [nombre, setNombre] = useState("");
-
-  const [apellido, setApellido] = useState("");
-
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     let user = {
-      user: { username, nombre, apellido, password },
+      user: { username, name, password },
     };
     console.log(user);
     postData("/user/new", user).then((data) => {
@@ -71,7 +68,7 @@ function Register(props) {
         </Form.Row>
       </Form.Group>
 
-      <Form.Group controlId="formGridNombre">
+      <Form.Group controlId="formGridName">
         <Form.Label>Name</Form.Label>
         <Form.Row>
 
@@ -79,7 +76,7 @@ function Register(props) {
             required
             type="text"
             placeholder="Name"
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
 
 

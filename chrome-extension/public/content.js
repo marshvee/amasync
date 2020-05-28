@@ -35,11 +35,11 @@ function getStorage() {
   let link = sessionStorage.getItem("link")
   let name = sessionStorage.getItem("name")
   let room = sessionStorage.getItem("room")
-  return [link, room, name]
+  return [link,  name, room]
 }
 
 function saveSession(key, value) {
-  //sessionStorage.setItem(key, value);
+  sessionStorage.setItem(key, value);
 }
 
 
@@ -136,20 +136,20 @@ function createRoom(name) {
   let videos = document.querySelectorAll("video");
   let video = videos[videos.length - 1];
   ws = new WebSocket("wss://amasync.tk:8080");
+  /* ws = new WebSocket("wss://localhost:8080"); */
   ws.onmessage = onmessage;
   hostModePause();
   ws.onopen = () =>
     ws.send(
       PROTOCOL.CREATE +
       PROTOCOL.SEPARATOR +
-      name +
-      PROTOCOL.SEPARATOR +
-      video.currentTime
+      name 
     );
 }
 
 function joinRoom(name, room) {
   ws = new WebSocket("wss://amasync.tk:8080");
+  /* ws = new WebSocket("wss://localhost:8080"); */
   ws.onmessage = onmessage;
   ws.onopen = () => {
     ws.send(
@@ -175,7 +175,6 @@ function onmessage(e) {
       let res = window.location.href;
       let roomID = rest[0];
       let name = rest[1];
-      let time = rest[2];
       let prefix = res.includes("?") ? "&" : "?";
       let data =
         res + prefix + "session=" + roomID + "&name=" + name;

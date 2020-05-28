@@ -8,9 +8,8 @@ function Login(props) {
   const [errorO, setError] = useState(false);
 
   const handleSubmit = () => {
-    let paciente = { username, password };
-    console.log(paciente);
-    postData("/login", paciente)
+    let user = { username, password };
+    postData("/login", user)
       .then((data) => {
         if (data.error) {
           //contraseña

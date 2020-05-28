@@ -11,7 +11,6 @@ function Room() {
   const [buttons, setButtons] = useState(true);
 
   const [user, setUser] = useState(null);
-  const [time, setTime] = useState(0);
   const [link, setLink] = useState("");
   const [room, setRoom] = useState("");
   const [name, setName] = useState("");
@@ -22,7 +21,6 @@ function Room() {
 
 
   let roomLink;
-  let hostName;
   let newRoom;
 
   function getQueryParams(url) {
@@ -43,21 +41,29 @@ function Room() {
   }
   
     useEffect(() => {
+
+      fetch("/getUser", { credentials: "include" })
+      .then((res) => res.json())
+      .then((user) => {
+        console.log("getUser", user);
+        setUser(user);
+      });
+      
       sendMessage({ action: "get" }, (ans) => {
         roomLink = ans[0]
-        hostName = ans[1]
+        setName( ans[1]);
         newRoom = ans[2]
         if (roomLink) {
           setJoin(false);
           setCreate(false);
           setJoined(false);
+          setButtons(false);
           setLink(roomLink);
-          if (hostName) {
-            setName(hostName);
-          }
+          
         }
         if (newRoom) {
           setRoom(newRoom);
+          setButtons(false);
           setJoin(false);
           setCreate(false);
           setJoined(false);
@@ -73,11 +79,13 @@ function Room() {
             setJoin(false);
             setCreate(false);
             setJoined(false);
+            setButtons(false);
             setLink(message.data);
             break;
           case "joined":
             setJoin(false);
             setCreate(false);
+            setButtons(false);
             setJoined(true);
             saveRoom(message.data);
             break;
@@ -94,7 +102,7 @@ function Room() {
           setJoined(newRoom);
           setJoin(!newRoom);
           setRoom(params.session);
-          setTime(params.time);
+          setButtons(false);
         } else {
           setJoin(false);
           setJoined(false);
@@ -116,12 +124,22 @@ function Room() {
   }
 
   const onCreateClick = () => {
+    
     sendMessage({ action: "setup" });
     sendMessage({
       action: "connect",
       data: nameInput,
     });
     saveName(nameInput);
+  };
+
+  const onCreateClickLoged = () => {
+    
+    sendMessage({ action: "setup" });
+    sendMessage({
+      action: "connect",
+      data: user.name,
+    });
   };
 
   const onJoinClick = () => {
@@ -135,7 +153,7 @@ function Room() {
 
   const saveName = (newName) => {
     sendMessage({ action: "session name", data: newName })
-    setName(newName);
+    setNameInput(newName);
   };
 
   const saveRoom = (newRoom) => {
@@ -147,7 +165,18 @@ function Room() {
     <Container>
       <h1 id="welcome">Welcome to Amasync{nameInput && <span>, {nameInput}</span>}!</h1>
       {buttons ?
+      
         <>
+        {user?<>
+          <Row>
+            <Button
+              className=" button-outline"
+              onClick={() => { setRegistre(false); setCreate(!create); setJoin(false); setLogin(false); setButtons(false) }}
+            >
+              Create Party
+        </Button>
+          </Row>
+         </>: <>
           <Row>
             <Button
               className=" button-outline"
@@ -156,7 +185,7 @@ function Room() {
               Anonymus
         </Button>
           </Row>
-
+         
           <Row>      <Button
             className=" button-outline"
 
@@ -173,10 +202,11 @@ function Room() {
               Register
         </Button>
           </Row>
-          
+          </>
+}
         </> :
         <>
-          {link || joined ?
+          {link || joined || join?
           
             <>
               {link &&   <div> <h3> Share this link with your friends</h3>
@@ -188,12 +218,11 @@ function Room() {
                <Button id="copy" onClick={copyLink}><FontAwesomeIcon  icon={faCopy}/></Button>
                </Row>
                </div>}
-               {joined && <div> You're currently in the room of {hostName} </div>}
-            </> : <>
-            {join && (
+               {joined && <div> You're currently in the room of { name} </div>}
+               {join && (
             <div id="join">
               <h6>
-                You're joining the room of: <span id="id-sala">{hostName}</span>
+                You're joining the room of: <span id="id-sala">{name}</span>
               </h6>
               <h6>Please insert your name: </h6>
               <input
@@ -207,8 +236,12 @@ function Room() {
           </button>
             </div>
           )}
-              {create && (
-                <Form onSubmit={()=>{onCreateClick();setButtons(false)}}>
+            </> : <>
+           
+              {create&&
+              <>
+                { !user?
+                <Form onSubmit={()=>{onCreateClick()}}>
                 
                   <Form.Group  controlId="formGridUsername">
                     <Form.Label>Name</Form.Label>
@@ -225,9 +258,19 @@ function Room() {
                   <Button  id="start" type="submit">
                     Start party
             </Button>
-            </Form>
+            </Form>:<>
+            <Form onSubmit={()=>{onCreateClickLoged()}}>
                 
-              )}
+                  
+                  <Button  id="start" type="submit">
+                    Start party
+            </Button>
+            </Form>
+            </>
+                }
+                </>
+                
+              }
               {login && (
                 <Login setUser={setUser} />
 
