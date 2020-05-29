@@ -1,3 +1,4 @@
+//En general los componentes estan bastante organizados, se puede apreciar una buena identacion del codigo , los hooks estas siendo utilizados adecuadamente, lo unico que falta y es recomendable tiene que ver con la documentacion del codigo.
 /*global chrome*/
 import React, { useState, useEffect } from "react";
 import { Button, Container, Row, Form } from "react-bootstrap";
