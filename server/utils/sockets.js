@@ -128,14 +128,9 @@ const Sockets = function () {
       //Do some cleanup here
     });
   };
+  
+  // Sería bueno quitar este cógigo comentado
 
-  /* TO DO: Notify chat message
-  sockets.notifyAll = (data) => {
-    for (let ws of clients) {
-      ws.send(data);
-    }
-  };
-  */
 
   return sockets;
 };
