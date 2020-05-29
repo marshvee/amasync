@@ -1,3 +1,4 @@
+/* Me parecio chévere el uso de uuid */
 const uuid = require("uuid");
 
 const Rooms = function () {
