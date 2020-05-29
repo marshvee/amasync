@@ -63,7 +63,8 @@ function Login(props) {
       </Form>
     </>
   );
-
+  /* El código de está parte se ecnuentra muy bien comentado al igual que el de los otros componentes*/
+  
   //Método para hacer post con fetch
   async function postData(url = "", data = {}) {
     // Default options are marked with *
@@ -74,7 +75,6 @@ function Login(props) {
       credentials: "include", // include, *same-origin, omit
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *client
