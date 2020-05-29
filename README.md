@@ -1,3 +1,4 @@
+Respecto al readme propuesto, se encuentran los elementos solicitados para la realizacion de un buen readme. Adicionalmente esta muy bien organizado y explica claramente como usar la extension.
 # AmaSync Extension 🍿🎬☁️
 
 ## Authors:
