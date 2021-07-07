@@ -1,3 +1,4 @@
+// Hay un buen uso de las variables de entorno, no poseen codigo basura como logs y demas cosas por el estilo, falta documentar que hace cada uno de los metodos propuestos.
 const MongoClient = require("mongodb").MongoClient;
 
 function DB() {
