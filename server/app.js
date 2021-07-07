@@ -1,3 +1,5 @@
+// Esta muy bien que no hayan usado var y solo usen const 
+
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
